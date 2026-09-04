@@ -3,228 +3,216 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CRITICAL_SECURITY_BREACH_ALERT</title>
+    <title>CYBER_TERMINAL_INTERFACE_v4.09</title>
 
     <style>
         * {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
-            margin: 0;
-            background: #050000;
-            color: #ff1744;
-            font-family: "Courier New", monospace;
+            background-color: #030305;
+            color: #00ff66;
+            font-family: 'Courier New', Courier, monospace;
             height: 100vh;
             overflow: hidden;
-            user-select: none;
+            display: flex;
+            flex-direction: column;
         }
 
-        /* Scanline Overlay */
+        /* CRT Scanline & Curved Screen Effect */
         body::before {
             content: "";
             position: fixed;
             inset: 0;
-            background: repeating-linear-gradient(
-                0deg,
-                rgba(255, 23, 68, 0.08),
-                rgba(255, 23, 68, 0.08) 1px,
-                transparent 1px,
-                transparent 3px
+            background: linear-gradient(
+                rgba(18, 16, 16, 0) 50%, 
+                rgba(0, 0, 0, 0.25) 50%
+            ), linear-gradient(
+                90deg,
+                rgba(255, 0, 0, 0.03),
+                rgba(0, 255, 0, 0.01),
+                rgba(0, 0, 255, 0.03)
             );
+            background-size: 100% 3px, 6px 100%;
             pointer-events: none;
             z-index: 10;
         }
 
-        /* Rotes Warn-Blinken für den Hintergrund */
-        .alarm-bg {
-            animation: alarm 0.8s infinite alternate;
-        }
-
-        @keyframes alarm {
-            from { background-color: #050000; }
-            to { background-color: #2a0005; }
-        }
-
-        .terminal {
-            padding: 30px;
-            height: 100vh;
-            overflow: hidden;
-            text-shadow: 0 0 10px #ff1744;
-        }
-
-        .line {
-            margin: 6px 0;
-            font-size: 15px;
-            letter-spacing: 1px;
-        }
-
-        .alert-box {
-            border: 2px solid #ff1744;
-            padding: 20px;
-            margin-top: 25px;
-            background: rgba(255, 23, 68, 0.05);
-            box-shadow: 0 0 15px rgba(255, 23, 68, 0.4);
-        }
-
-        .big-title {
-            font-size: 28px;
+        /* Header Bar */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+            background: #0a0a0f;
+            border-bottom: 2px solid #00ff66;
+            box-shadow: 0 0 15px rgba(0, 255, 102, 0.3);
             font-weight: bold;
-            color: #ffffff;
-            text-shadow: 0 0 15px #ff1744;
+        }
+
+        .status-badge {
+            background: #ff0055;
+            color: #fff;
+            padding: 4px 8px;
+            font-size: 12px;
+            border-radius: 2px;
+            animation: pulse 1s infinite alternate;
+        }
+
+        /* Layout Grid */
+        .grid-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            flex-grow: 1;
+            gap: 15px;
+            padding: 15px;
+            height: calc(100vh - 50px);
+        }
+
+        /* Terminal Window */
+        .terminal-panel {
+            background: rgba(5, 10, 5, 0.85);
+            border: 1px solid rgba(0, 255, 102, 0.3);
+            padding: 15px;
+            overflow-y: auto;
+            box-shadow: inset 0 0 20px rgba(0, 255, 102, 0.05);
+            text-shadow: 0 0 5px #00ff66;
+        }
+
+        .log-line {
+            margin-bottom: 6px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .log-line.warn { color: #ffcc00; text-shadow: 0 0 5px #ffcc00; }
+        .log-line.crit { color: #ff0055; text-shadow: 0 0 5px #ff0055; }
+
+        /* Sidebar Panels */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .hud-box {
+            background: rgba(10, 5, 15, 0.85);
+            border: 1px solid #ff0055;
+            padding: 15px;
+            box-shadow: 0 0 10px rgba(ff, 0, 85, 0.2);
+        }
+
+        .hud-title {
+            color: #ff0055;
+            font-size: 12px;
+            letter-spacing: 2px;
             margin-bottom: 10px;
+            border-bottom: 1px dashed #ff0055;
+            padding-bottom: 5px;
         }
 
-        .timer-display {
-            font-size: 45px;
-            font-weight: bold;
-            color: #ff1744;
-            text-align: center;
-            margin: 20px 0;
-            text-shadow: 0 0 20px #ff1744;
+        /* Visual Progress Bars */
+        .bar-container {
+            width: 100%;
+            background: #111;
+            height: 12px;
+            border: 1px solid #00ff66;
+            margin-top: 5px;
+            position: relative;
+        }
+
+        .bar-fill {
+            height: 100%;
+            background: #00ff66;
+            width: 0%;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px #00ff66;
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            from { opacity: 1; }
+            to { opacity: 0.4; }
         }
 
         .blink {
-            animation: blink 0.5s infinite;
-        }
-
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
-        }
-
-        .glitch {
-            animation: glitch 0.2s infinite;
-        }
-
-        @keyframes glitch {
-            0% { transform: translate(0); }
-            20% { transform: translate(-2px, 2px); }
-            40% { transform: translate(-2px, -2px); }
-            60% { transform: translate(2px, 2px); }
-            80% { transform: translate(2px, -2px); }
-            100% { transform: translate(0); }
+            animation: pulse 0.8s infinite alternate;
         }
     </style>
 </head>
+<body>
 
-<body onclick="playAlarmSound()">
+    <div class="top-bar">
+        <div>CORE_OS // PROTOCOL_NEON_v4</div>
+        <div>SYS_STATUS: <span class="status-badge">OVERLOAD</span></div>
+    </div>
 
-<div class="terminal" id="terminal"></div>
+    <div class="grid-container">
+        <!-- Main Console -->
+        <div class="terminal-panel" id="console">
+            <div class="log-line">[SYSTEM_INIT] Booting neural interface...</div>
+            <div class="log-line">[SYS_CHECK] Memory allocation: 0x88F200A1</div>
+        </div>
+
+        <!-- Right Side HUD -->
+        <div class="sidebar">
+            <div class="hud-box">
+                <div class="hud-title">SYSTEM METRICS</div>
+                <div style="font-size: 12px; margin-top: 10px;">CPU LOAD: <span id="cpu-val">42%</span></div>
+                <div class="bar-container">
+                    <div class="bar-fill" id="cpu-bar" style="width: 42%;"></div>
+                </div>
+
+                <div style="font-size: 12px; margin-top: 15px;">CORE TEMP: <span id="temp-val" style="color:#ff0055">88°C</span></div>
+                <div class="bar-container" style="border-color: #ff0055;">
+                    <div class="bar-fill" id="temp-bar" style="width: 88%; background: #ff0055; box-shadow: 0 0 10px #ff0055;"></div>
+                </div>
+            </div>
+
+            <div class="hud-box" style="border-color: #00ff66; flex-grow: 1;">
+                <div class="hud-title" style="color: #00ff66; border-color: #00ff66;">NETWORK GRAPH</div>
+                <div class="blink" style="font-size: 11px; color: #00ff66; margin-top: 10px;">
+                    > SCANNING FREQUENCIES...<br>
+                    > PORT_8080: ACTIVE<br>
+                    > PORT_22: LISTENING<br>
+                    > PACKET_LOSS: 0.003%
+                </div>
+            </div>
+        </div>
+    </div>
 
 <script>
-    const terminal = document.getElementById("terminal");
-
-    const initialLines = [
-        "[!] EMERGENCY OVERRIDE TRIGGERED...",
-        "[!] EXPLOIT: CVE-2026-9941 EXECUTED",
-        "[+] Bypassing local firewall restrictions...",
-        "[+] Dumping system credentials...",
-        "[+] Injecting payload to memory sector 0x004F...",
-        "[+] Encrypting filesystem (AES-256)...",
-        "    -> /Users/Documents [ENCRYPTED]",
-        "    -> /Users/Photos [ENCRYPTED]",
-        "    -> /Users/Passwords.db [EXFILTRATED]",
-        "[+] Uploading private keys to remote C2 Server...",
-        "████████████████████████████ 100%"
+    const consoleEl = document.getElementById("console");
+    
+    const mockLogs = [
+        { text: "[NET] Connection established to node_091.", type: "normal" },
+        { text: "[MEM] Buffer overflow warning in sector 4.", type: "warn" },
+        { text: "[PROCESS] Executing thread #4091...", type: "normal" },
+        { text: "[ALERT] High thermal load detected on Core 2!", type: "crit" },
+        { text: "[NET] Incoming data stream: 128.4 MB/s", type: "normal" },
+        { text: "[SYS] Syncing quantum encryption keys...", type: "normal" },
+        { text: "[WARN] Latency spike on interface eth0", type: "warn" }
     ];
 
-    let lineIndex = 0;
+    // Automatischer Log-Generator für Terminal-Atmosphäre
+    setInterval(() => {
+        const randomLog = mockLogs[Math.floor(Math.random() * mockLogs.length)];
+        const line = document.createElement("div");
+        line.className = "log-line " + (randomLog.type === "warn" ? "warn" : randomLog.type === "crit" ? "crit" : "");
+        line.textContent = `[${new Date().toLocaleTimeString()}] ${randomLog.text}`;
+        consoleEl.appendChild(line);
+        consoleEl.scrollTop = consoleEl.scrollHeight;
+    }, 1200);
 
-    function addLine() {
-        if (lineIndex < initialLines.length) {
-            const div = document.createElement("div");
-            div.className = "line";
-            div.textContent = initialLines[lineIndex];
-            terminal.appendChild(div);
-
-            lineIndex++;
-            window.scrollTo(0, document.body.scrollHeight);
-
-            setTimeout(addLine, Math.random() * 300 + 100);
-        } else {
-            setTimeout(showLockout, 800);
-        }
-    }
-
-    function showLockout() {
-        document.body.classList.add("alarm-bg");
-        terminal.innerHTML = `
-            <div class="big-title glitch">
-                ☠ SCHWERWIEGENDE SICHERHEITSVERLETZUNG ☠
-            </div>
-
-            <div class="line">
-                [SYSTEM GESPERRT] Alle persönlichen Dateien wurden verschlüsselt.
-            </div>
-            <div class="line">
-                IP-ADRESSE LOG: <span style="color:#fff;">192.0.2.123</span> (GEORTET)
-            </div>
-
-            <div class="alert-box">
-                <div class="line" style="color: #fff; font-weight: bold;">
-                    WARNUNG: Ein Übertragungs-Protokoll wurde gestartet.
-                </div>
-                <div class="line">
-                    Sämtliche Passwörter, Browser-Daten und private Fotos werden an einen externen Server gesendet.
-                </div>
-
-                <div class="timer-display blink" id="timer">04:59</div>
-
-                <div class="line" style="text-align: center; font-size: 13px;">
-                    Schließen Sie dieses Fenster nicht. Ein Ausschalten des Geräts führt zum dauerhaften Datenverlust.
-                </div>
-            </div>
-
-            <div class="line blink" style="margin-top: 20px; color: #ffffff;">
-                > VERBINDUNG ZU C2-SERVER AKTIV... DATENÜBERTRAGUNG LÄUFT.
-            </div>
-        `;
-
-        startTimer(300);
-    }
-
-    function startTimer(seconds) {
-        let counter = seconds;
-        const timerElement = document.getElementById("timer");
-
-        const interval = setInterval(() => {
-            const mins = Math.floor(counter / 60);
-            const secs = counter % 60;
-            timerElement.textContent = 
-                `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-
-            if (counter <= 0) {
-                clearInterval(interval);
-                timerElement.textContent = "00:00 - DATEN VERLOREN";
-            }
-            counter--;
-        }, 1000);
-    }
-
-    // Erzeugt einen tiefen Alarmsound beim ersten Klick
-    let audioCtx;
-    function playAlarmSound() {
-        if (!audioCtx) {
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-
-            osc.type = 'sawtooth';
-            osc.frequency.setValueAtTime(120, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 1);
-
-            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-
-            osc.start();
-            osc.stop(audioCtx.currentTime + 1);
-        }
-    }
-
-    addLine();
+    // Dynamische Balke-Updates für HUD-Optik
+    setInterval(() => {
+        const cpu = Math.floor(Math.random() * 40) + 50;
+        document.getElementById("cpu-val").textContent = cpu + "%";
+        document.getElementById("cpu-bar").style.width = cpu + "%";
+    }, 2000);
 </script>
 
 </body>
