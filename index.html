@@ -22,7 +22,7 @@
             flex-direction: column;
         }
 
-        /* CRT Scanline & Curved Screen Effect */
+        /* CRT Scanline & Screen Effect */
         body::before {
             content: "";
             position: fixed;
@@ -80,6 +80,9 @@
             overflow-y: auto;
             box-shadow: inset 0 0 20px rgba(0, 255, 102, 0.05);
             text-shadow: 0 0 5px #00ff66;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
         .log-line {
@@ -90,6 +93,18 @@
 
         .log-line.warn { color: #ffcc00; text-shadow: 0 0 5px #ffcc00; }
         .log-line.crit { color: #ff0055; text-shadow: 0 0 5px #ff0055; }
+
+        /* Prank Disclaimer Banner */
+        .disclaimer-box {
+            margin-top: 20px;
+            padding: 12px;
+            border: 1px dashed #00ff66;
+            background: rgba(0, 255, 102, 0.1);
+            color: #ffffff;
+            font-weight: bold;
+            text-align: center;
+            text-shadow: 0 0 8px #00ff66;
+        }
 
         /* Sidebar Panels */
         .sidebar {
@@ -102,7 +117,7 @@
             background: rgba(10, 5, 15, 0.85);
             border: 1px solid #ff0055;
             padding: 15px;
-            box-shadow: 0 0 10px rgba(ff, 0, 85, 0.2);
+            box-shadow: 0 0 10px rgba(255, 0, 85, 0.2);
         }
 
         .hud-title {
@@ -121,7 +136,6 @@
             height: 12px;
             border: 1px solid #00ff66;
             margin-top: 5px;
-            position: relative;
         }
 
         .bar-fill {
@@ -147,14 +161,21 @@
 
     <div class="top-bar">
         <div>CORE_OS // PROTOCOL_NEON_v4</div>
-        <div>SYS_STATUS: <span class="status-badge">OVERLOAD</span></div>
+        <div>SYS_STATUS: <span class="status-badge">SIMULATION</span></div>
     </div>
 
     <div class="grid-container">
         <!-- Main Console -->
-        <div class="terminal-panel" id="console">
-            <div class="log-line">[SYSTEM_INIT] Booting neural interface...</div>
-            <div class="log-line">[SYS_CHECK] Memory allocation: 0x88F200A1</div>
+        <div class="terminal-panel">
+            <div id="logs">
+                <div class="log-line">[SYSTEM_INIT] Booting neural interface...</div>
+                <div class="log-line">[SYS_CHECK] Memory allocation: 0x88F200A1</div>
+            </div>
+
+            <!-- Disclaimer Text -->
+            <div class="disclaimer-box blink">
+                [!] Nur Spaß, es passiert nichts! Diese Webseite wurde mit KI gemacht ;D
+            </div>
         </div>
 
         <!-- Right Side HUD -->
@@ -168,46 +189,43 @@
 
                 <div style="font-size: 12px; margin-top: 15px;">CORE TEMP: <span id="temp-val" style="color:#ff0055">88°C</span></div>
                 <div class="bar-container" style="border-color: #ff0055;">
-                    <div class="bar-fill" id="temp-bar" style="width: 88%; background: #ff0055; box-shadow: 0 0 10px #ff0055;"></div>
+                    <div class="bar-fill" style="width: 88%; background: #ff0055; box-shadow: 0 0 10px #ff0055;"></div>
                 </div>
             </div>
 
             <div class="hud-box" style="border-color: #00ff66; flex-grow: 1;">
                 <div class="hud-title" style="color: #00ff66; border-color: #00ff66;">NETWORK GRAPH</div>
                 <div class="blink" style="font-size: 11px; color: #00ff66; margin-top: 10px;">
-                    > SCANNING FREQUENCIES...<br>
+                    > RUNNING SIMULATION...<br>
                     > PORT_8080: ACTIVE<br>
-                    > PORT_22: LISTENING<br>
-                    > PACKET_LOSS: 0.003%
+                    > NO REAL DATA TOUCHED<br>
+                    > STATUS: SAFE
                 </div>
             </div>
         </div>
     </div>
 
 <script>
-    const consoleEl = document.getElementById("console");
+    const logsEl = document.getElementById("logs");
     
     const mockLogs = [
         { text: "[NET] Connection established to node_091.", type: "normal" },
         { text: "[MEM] Buffer overflow warning in sector 4.", type: "warn" },
         { text: "[PROCESS] Executing thread #4091...", type: "normal" },
         { text: "[ALERT] High thermal load detected on Core 2!", type: "crit" },
-        { text: "[NET] Incoming data stream: 128.4 MB/s", type: "normal" },
-        { text: "[SYS] Syncing quantum encryption keys...", type: "normal" },
-        { text: "[WARN] Latency spike on interface eth0", type: "warn" }
+        { text: "[NET] Incoming data stream: 128.4 MB/s", type: "normal" }
     ];
 
-    // Automatischer Log-Generator für Terminal-Atmosphäre
+    // Automatischer Log-Generator
     setInterval(() => {
         const randomLog = mockLogs[Math.floor(Math.random() * mockLogs.length)];
         const line = document.createElement("div");
         line.className = "log-line " + (randomLog.type === "warn" ? "warn" : randomLog.type === "crit" ? "crit" : "");
         line.textContent = `[${new Date().toLocaleTimeString()}] ${randomLog.text}`;
-        consoleEl.appendChild(line);
-        consoleEl.scrollTop = consoleEl.scrollHeight;
+        logsEl.appendChild(line);
     }, 1200);
 
-    // Dynamische Balke-Updates für HUD-Optik
+    // Dynamische Balken-Updates
     setInterval(() => {
         const cpu = Math.floor(Math.random() * 40) + 50;
         document.getElementById("cpu-val").textContent = cpu + "%";
