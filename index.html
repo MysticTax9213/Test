@@ -1,10 +1,9 @@
-```html
 <!DOCTYPE html>
 <html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>System Access</title>
+    <title>CRITICAL_SECURITY_BREACH_ALERT</title>
 
     <style>
         * {
@@ -13,143 +12,216 @@
 
         body {
             margin: 0;
-            background: #000;
-            color: #00ff41;
+            background: #050000;
+            color: #ff1744;
             font-family: "Courier New", monospace;
             height: 100vh;
             overflow: hidden;
+            user-select: none;
         }
 
+        /* Scanline Overlay */
         body::before {
             content: "";
             position: fixed;
             inset: 0;
             background: repeating-linear-gradient(
                 0deg,
-                rgba(0,255,65,0.03),
-                rgba(0,255,65,0.03) 1px,
+                rgba(255, 23, 68, 0.08),
+                rgba(255, 23, 68, 0.08) 1px,
                 transparent 1px,
                 transparent 3px
             );
             pointer-events: none;
+            z-index: 10;
+        }
+
+        /* Rotes Warn-Blinken für den Hintergrund */
+        .alarm-bg {
+            animation: alarm 0.8s infinite alternate;
+        }
+
+        @keyframes alarm {
+            from { background-color: #050000; }
+            to { background-color: #2a0005; }
         }
 
         .terminal {
             padding: 30px;
             height: 100vh;
             overflow: hidden;
-            text-shadow: 0 0 8px #00ff41;
+            text-shadow: 0 0 10px #ff1744;
         }
 
         .line {
-            margin: 7px 0;
-            font-size: 16px;
+            margin: 6px 0;
+            font-size: 15px;
+            letter-spacing: 1px;
         }
 
-        .big {
-            font-size: 32px;
-            margin-top: 30px;
-            animation: glow 1s infinite alternate;
+        .alert-box {
+            border: 2px solid #ff1744;
+            padding: 20px;
+            margin-top: 25px;
+            background: rgba(255, 23, 68, 0.05);
+            box-shadow: 0 0 15px rgba(255, 23, 68, 0.4);
         }
 
-        .red {
+        .big-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #ffffff;
+            text-shadow: 0 0 15px #ff1744;
+            margin-bottom: 10px;
+        }
+
+        .timer-display {
+            font-size: 45px;
+            font-weight: bold;
             color: #ff1744;
-            text-shadow: 0 0 8px #ff1744;
+            text-align: center;
+            margin: 20px 0;
+            text-shadow: 0 0 20px #ff1744;
         }
 
         .blink {
-            animation: blink 0.7s infinite;
+            animation: blink 0.5s infinite;
         }
 
         @keyframes blink {
+            0%, 100% { opacity: 1; }
             50% { opacity: 0; }
         }
 
-        @keyframes glow {
-            from { text-shadow: 0 0 5px #00ff41; }
-            to { text-shadow: 0 0 25px #00ff41; }
+        .glitch {
+            animation: glitch 0.2s infinite;
+        }
+
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
         }
     </style>
 </head>
 
-<body>
+<body onclick="playAlarmSound()">
 
 <div class="terminal" id="terminal"></div>
 
 <script>
     const terminal = document.getElementById("terminal");
 
-    const lines = [
-        "[+] Initializing secure connection...",
-        "[+] Connecting to remote server...",
-        "[+] Connection established.",
-        "[+] Searching network interface...",
-        "[+] Detecting public IP...",
-        "[+] IP address detected: 192.0.2.123",
-        "[+] Checking system information...",
-        "[+] System scan: COMPLETE",
-        "[+] Location lookup: COMPLETE",
-        "[+] Security bypass: COMPLETE",
-        "",
-        "[!] ACCESS GRANTED",
-        "",
-        "Downloading data...",
-        "████████████████████████████ 100%",
-        "",
-        "Uploading information...",
+    const initialLines = [
+        "[!] EMERGENCY OVERRIDE TRIGGERED...",
+        "[!] EXPLOIT: CVE-2026-9941 EXECUTED",
+        "[+] Bypassing local firewall restrictions...",
+        "[+] Dumping system credentials...",
+        "[+] Injecting payload to memory sector 0x004F...",
+        "[+] Encrypting filesystem (AES-256)...",
+        "    -> /Users/Documents [ENCRYPTED]",
+        "    -> /Users/Photos [ENCRYPTED]",
+        "    -> /Users/Passwords.db [EXFILTRATED]",
+        "[+] Uploading private keys to remote C2 Server...",
         "████████████████████████████ 100%"
     ];
 
-    let index = 0;
+    let lineIndex = 0;
 
     function addLine() {
-        if (index < lines.length) {
+        if (lineIndex < initialLines.length) {
             const div = document.createElement("div");
             div.className = "line";
-            div.textContent = lines[index];
+            div.textContent = initialLines[lineIndex];
             terminal.appendChild(div);
 
-            index++;
+            lineIndex++;
             window.scrollTo(0, document.body.scrollHeight);
 
-            setTimeout(addLine, Math.random() * 500 + 250);
+            setTimeout(addLine, Math.random() * 300 + 100);
         } else {
-            setTimeout(showTroll, 1000);
+            setTimeout(showLockout, 800);
         }
     }
 
-    function showTroll() {
+    function showLockout() {
+        document.body.classList.add("alarm-bg");
         terminal.innerHTML = `
-            <div class="big red">
-                ☠ SYSTEM COMPROMISED ☠
-            </div>
-
-            <div class="line" style="margin-top:30px;">
-                IP ADDRESS: 192.0.2.123
+            <div class="big-title glitch">
+                ☠ SCHWERWIEGENDE SICHERHEITSVERLETZUNG ☠
             </div>
 
             <div class="line">
-                DATA STATUS: TOTALLY REAL
+                [SYSTEM GESPERRT] Alle persönlichen Dateien wurden verschlüsselt.
             </div>
-
             <div class="line">
-                SECURITY: 0%
+                IP-ADRESSE LOG: <span style="color:#fff;">192.0.2.123</span> (GEORTET)
             </div>
 
-            <br>
+            <div class="alert-box">
+                <div class="line" style="color: #fff; font-weight: bold;">
+                    WARNUNG: Ein Übertragungs-Protokoll wurde gestartet.
+                </div>
+                <div class="line">
+                    Sämtliche Passwörter, Browser-Daten und private Fotos werden an einen externen Server gesendet.
+                </div>
 
-            <div class="big">
-                😂 JO, DANKE FÜR DEINE IP!
+                <div class="timer-display blink" id="timer">04:59</div>
+
+                <div class="line" style="text-align: center; font-size: 13px;">
+                    Schließen Sie dieses Fenster nicht. Ein Ausschalten des Geräts führt zum dauerhaften Datenverlust.
+                </div>
             </div>
 
-            <div class="line">
-                Haha xD
-            </div>
-
-            <div class="line blink">
-                [ Das war natürlich nur ein Spaß ]
+            <div class="line blink" style="margin-top: 20px; color: #ffffff;">
+                > VERBINDUNG ZU C2-SERVER AKTIV... DATENÜBERTRAGUNG LÄUFT.
             </div>
         `;
+
+        startTimer(300);
+    }
+
+    function startTimer(seconds) {
+        let counter = seconds;
+        const timerElement = document.getElementById("timer");
+
+        const interval = setInterval(() => {
+            const mins = Math.floor(counter / 60);
+            const secs = counter % 60;
+            timerElement.textContent = 
+                `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+
+            if (counter <= 0) {
+                clearInterval(interval);
+                timerElement.textContent = "00:00 - DATEN VERLOREN";
+            }
+            counter--;
+        }, 1000);
+    }
+
+    // Erzeugt einen tiefen Alarmsound beim ersten Klick
+    let audioCtx;
+    function playAlarmSound() {
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(120, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 1);
+
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            osc.start();
+            osc.stop(audioCtx.currentTime + 1);
+        }
     }
 
     addLine();
@@ -157,4 +229,3 @@
 
 </body>
 </html>
-```
